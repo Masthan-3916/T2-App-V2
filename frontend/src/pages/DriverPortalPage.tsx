@@ -4,7 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { ordersApi, driversApi } from '../services/api';
 import { useAuthStore } from '../store/authStore';
 import { Order, OrderStatus, Driver } from '../types';
-import { Badge, Spinner } from '../components/ui';
+import { Badge } from '../components/ui';
 import { format } from 'date-fns';
 import toast from 'react-hot-toast';
 

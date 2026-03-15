@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { usersApi } from '../services/api';
-import { User, UserRole, UserStatus } from '../types';
+import { User, UserRole } from '../types';
 import { useAuthStore } from '../store/authStore';
 import { Spinner, Badge, Modal, Input, Select, EmptyState } from '../components/ui';
 import { format } from 'date-fns';

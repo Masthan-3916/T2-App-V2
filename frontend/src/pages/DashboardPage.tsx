@@ -2,7 +2,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { dashboardApi } from '../services/api';
 import { DashboardSummary } from '../types';
-import { Badge, Spinner } from '../components/ui';
+import { Spinner, Badge } from '../components/ui';
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
   CartesianGrid,
@@ -58,16 +58,13 @@ export default function DashboardPage() {
     refetchInterval: 60_000,
   });
 
-  const { data: utilizationRes } = useQuery({
-    queryKey: ['driver-utilization'],
-    queryFn: dashboardApi.driverUtilization,
-  });
+
 
   const isForbidden = (summaryError as any)?.response?.status === 403;
 
   const summary: DashboardSummary | undefined = summaryRes?.data?.data;
   const metrics = metricsRes?.data?.data;
-  const utilization = utilizationRes?.data?.data ?? [];
+
 
   if (summaryLoading) {
     return (
@@ -189,7 +186,7 @@ export default function DashboardPage() {
             </div>
             <div>
                <p className="text-[10px] text-slate-600 font-black uppercase mb-1">Peak Volume</p>
-               <p className="text-white font-black text-xl">{Math.max(...(metrics?.daily_metrics?.map(m => m.created) || [0]))}<span className="text-slate-500 text-xs ml-1">MAX/DAY</span></p>
+               <p className="text-white font-black text-xl">{Math.max(...(metrics?.daily_metrics?.map((m: any) => m.created) || [0]))}<span className="text-slate-500 text-xs ml-1">MAX/DAY</span></p>
             </div>
           </div>
         </div>
