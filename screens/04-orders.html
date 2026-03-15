@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Screen 04 — Orders | FleetOps</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: #0f172a; color: #fff; min-height: 100vh; display: flex; }
+  .sidebar { width: 220px; background: #0f172a; border-right: 1px solid #1e293b; flex-shrink: 0; padding: 16px 8px; }
+  .sidebar-logo { display: flex; align-items: center; gap: 10px; padding: 0 8px 16px; border-bottom: 1px solid #1e293b; margin-bottom: 12px; }
+  .logo-icon { width: 32px; height: 32px; background: #f97316; border-radius: 9px; font-size: 16px; display: flex; align-items: center; justify-content: center; }
+  .nav-item { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 10px; font-size: 13px; color: #64748b; margin-bottom: 2px; }
+  .nav-item.active { background: rgba(249,115,22,.12); color: #fb923c; font-weight: 600; }
+  .main { flex: 1; padding: 24px; overflow-y: auto; }
+  .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+  .page-title { font-size: 22px; font-weight: 700; }
+  .page-sub { font-size: 13px; color: #64748b; margin-top: 3px; }
+  .btn-primary { background: #f97316; color: #fff; border: none; border-radius: 10px; padding: 9px 18px; font-size: 13px; font-weight: 600; cursor: pointer; }
+  .filter-row { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+  .filter-btn { padding: 6px 14px; border-radius: 9px; border: none; font-size: 12px; cursor: pointer; font-weight: 500; }
+  .filter-btn.active { background: #f97316; color: #fff; }
+  .filter-btn:not(.active) { background: #1e293b; color: #64748b; }
+  .table-wrap { background: #1e293b; border: 1px solid #334155; border-radius: 14px; overflow: hidden; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { text-align: left; padding: 12px 16px; font-size: 11px; color: #475569; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; border-bottom: 1px solid #334155; }
+  td { padding: 13px 16px; border-bottom: 1px solid #1e293b; color: #94a3b8; }
+  tr:last-child td { border-bottom: none; }
+  .mono { font-family: monospace; font-size: 11px; }
+  .td-white { color: #f1f5f9; font-weight: 500; max-width: 160px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .status { padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; white-space: nowrap; }
+  .s-created { background: rgba(100,116,139,.12); color: #94a3b8; }
+  .s-assigned { background: rgba(59,130,246,.12); color: #93c5fd; }
+  .s-transit { background: rgba(249,115,22,.12); color: #fb923c; }
+  .s-completed { background: rgba(16,185,129,.12); color: #34d399; }
+  .s-cancelled { background: rgba(239,68,68,.12); color: #f87171; }
+  .actions { display: flex; gap: 12px; }
+  .al { font-size: 12px; cursor: pointer; }
+  .al.view { color: #93c5fd; }
+  .al.assign { color: #fb923c; }
+</style>
+</head>
+<body>
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-icon">🚚</div>
+    <span style="font-weight:700;font-size:14px">FleetOps</span>
+  </div>
+  <div class="nav-item">🏠 Dashboard</div>
+  <div class="nav-item">👥 Drivers</div>
+  <div class="nav-item">🚗 Vehicles</div>
+  <div class="nav-item active">📦 Orders</div>
+  <div class="nav-item">📍 Live Tracking</div>
+  <div class="nav-item">🚚 Driver Portal</div>
+  <div class="nav-item">👤 Users</div>
+</nav>
+
+<div class="main">
+  <div class="header">
+    <div>
+      <div class="page-title">Orders</div>
+      <div class="page-sub">24 orders total · Auto-refreshes every 15s</div>
+    </div>
+    <button class="btn-primary">+ New Order</button>
+  </div>
+
+  <div class="filter-row">
+    <button class="filter-btn active">All</button>
+    <button class="filter-btn">Created</button>
+    <button class="filter-btn">Assigned</button>
+    <button class="filter-btn">In Transit</button>
+    <button class="filter-btn">Completed</button>
+    <button class="filter-btn">Cancelled</button>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Pickup</th>
+          <th>Drop-off</th>
+          <th>Status</th>
+          <th>Driver</th>
+          <th>ETA</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="mono">30000001...</td>
+          <td class="td-white">Warehouse A, 123 Industrial Blvd</td>
+          <td>Client Office, 456 Market St</td>
+          <td><span class="status s-transit">in transit</span></td>
+          <td>Dan Driver</td>
+          <td>~18m</td>
+          <td class="actions">
+            <span class="al view">View</span>
+          </td>
+        </tr>
+        <tr>
+          <td class="mono">30000002...</td>
+          <td class="td-white">Depot B, 789 Commerce Ave</td>
+          <td>Retail Store, 101 Shopping Lane</td>
+          <td><span class="status s-assigned">assigned</span></td>
+          <td>Sam Smith</td>
+          <td>~12m</td>
+          <td class="actions">
+            <span class="al view">View</span>
+          </td>
+        </tr>
+        <tr>
+          <td class="mono">30000003...</td>
+          <td class="td-white">Distribution Center, 500 Logistics Dr</td>
+          <td>Factory, 900 Industrial Pkwy</td>
+          <td><span class="status s-created">created</span></td>
+          <td style="color:#475569">Unassigned</td>
+          <td>—</td>
+          <td class="actions">
+            <span class="al view">View</span>
+            <span class="al assign">Assign</span>
+          </td>
+        </tr>
+        <tr>
+          <td class="mono">30000004...</td>
+          <td class="td-white">Main Depot, 44 Cargo Way</td>
+          <td>Airport, Terminal 2</td>
+          <td><span class="status s-completed">completed</span></td>
+          <td>Mike Roads</td>
+          <td>—</td>
+          <td class="actions">
+            <span class="al view">View</span>
+          </td>
+        </tr>
+        <tr>
+          <td class="mono">30000005...</td>
+          <td class="td-white">Cold Storage Unit A</td>
+          <td>Restaurant Row, Central Ave</td>
+          <td><span class="status s-cancelled">cancelled</span></td>
+          <td style="color:#475569">—</td>
+          <td>—</td>
+          <td class="actions">
+            <span class="al view">View</span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+</body>
+</html>

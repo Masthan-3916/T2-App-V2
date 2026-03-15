@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Screen 03 — Drivers | FleetOps</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: #0f172a; color: #fff; min-height: 100vh; display: flex; }
+  .sidebar { width: 220px; background: #0f172a; border-right: 1px solid #1e293b; flex-shrink: 0; padding: 16px 8px; }
+  .sidebar-logo { display: flex; align-items: center; gap: 10px; padding: 0 8px 16px; border-bottom: 1px solid #1e293b; margin-bottom: 12px; }
+  .logo-icon { width: 32px; height: 32px; background: #f97316; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+  .nav-item { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 10px; font-size: 13px; color: #64748b; margin-bottom: 2px; }
+  .nav-item.active { background: rgba(249,115,22,.12); color: #fb923c; font-weight: 600; }
+  .main { flex: 1; padding: 24px; }
+  .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+  .page-title { font-size: 22px; font-weight: 700; }
+  .page-sub { font-size: 13px; color: #64748b; margin-top: 3px; }
+  .btn-primary { background: #f97316; color: #fff; border: none; border-radius: 10px; padding: 9px 18px; font-size: 13px; font-weight: 600; cursor: pointer; }
+  .search-row { display: flex; gap: 12px; margin-bottom: 20px; }
+  .search { background: #1e293b; border: 1px solid #334155; border-radius: 10px; padding: 8px 14px; font-size: 13px; color: #94a3b8; width: 260px; }
+  .table-wrap { background: #1e293b; border: 1px solid #334155; border-radius: 14px; overflow: hidden; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { text-align: left; padding: 12px 16px; font-size: 11px; color: #475569; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; border-bottom: 1px solid #334155; }
+  td { padding: 13px 16px; border-bottom: 1px solid #1e293b; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(255,255,255,.02); }
+  .status { padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+  .s-active { background: rgba(16,185,129,.12); color: #34d399; }
+  .s-on-trip { background: rgba(249,115,22,.12); color: #fb923c; }
+  .s-inactive { background: rgba(100,116,139,.12); color: #94a3b8; }
+  .actions { display: flex; gap: 12px; }
+  .action-link { font-size: 12px; color: #64748b; cursor: pointer; }
+  .action-link.edit { color: #64748b; }
+  .action-link.assign { color: #93c5fd; }
+  .action-link.del { color: #f87171; }
+  .vehicle-tag { font-size: 11px; background: #0f172a; color: #64748b; padding: 3px 8px; border-radius: 6px; font-family: monospace; }
+  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.6); display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
+  .modal { background: #1e293b; border: 1px solid #334155; border-radius: 18px; padding: 28px; width: 380px; }
+  .modal-title { font-size: 16px; font-weight: 600; margin-bottom: 20px; }
+  .form-group { margin-bottom: 16px; }
+  .form-label { font-size: 11px; color: #64748b; margin-bottom: 6px; display: block; }
+  .form-input { width: 100%; background: #0f172a; border: 1px solid #334155; border-radius: 9px; padding: 9px 12px; font-size: 13px; color: #f1f5f9; }
+  .form-input:focus { border-color: #f97316; outline: none; }
+  .btn-row { display: flex; gap: 10px; margin-top: 20px; }
+  .btn-cancel { flex: 1; background: transparent; border: 1px solid #334155; border-radius: 10px; padding: 9px; font-size: 13px; color: #64748b; cursor: pointer; }
+  .btn-save { flex: 1; background: #f97316; border: none; border-radius: 10px; padding: 9px; font-size: 13px; font-weight: 600; color: #fff; cursor: pointer; }
+</style>
+</head>
+<body>
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-icon">🚚</div>
+    <span style="font-weight:700;font-size:14px">FleetOps</span>
+  </div>
+  <div class="nav-item">🏠 Dashboard</div>
+  <div class="nav-item active">👥 Drivers</div>
+  <div class="nav-item">🚗 Vehicles</div>
+  <div class="nav-item">📦 Orders</div>
+  <div class="nav-item">📍 Live Tracking</div>
+  <div class="nav-item">🚚 Driver Portal</div>
+  <div class="nav-item">👤 Users</div>
+</nav>
+
+<div class="main">
+  <div class="header">
+    <div>
+      <div class="page-title">Drivers</div>
+      <div class="page-sub">6 registered drivers</div>
+    </div>
+    <button class="btn-primary">+ Add Driver</button>
+  </div>
+
+  <div class="search-row">
+    <input class="search" type="text" placeholder="🔍  Search drivers..." value="" />
+    <select class="search" style="width:auto;padding:8px 12px;">
+      <option>All Status</option>
+      <option>Active</option>
+      <option>On Trip</option>
+      <option>Inactive</option>
+    </select>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Phone</th>
+          <th>License</th>
+          <th>Status</th>
+          <th>Vehicle</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="font-weight:600">Dan Driver</td>
+          <td style="color:#64748b">+1-555-0101</td>
+          <td style="color:#64748b;font-family:monospace;font-size:11px">LIC-001-2024</td>
+          <td><span class="status s-on-trip">on trip</span></td>
+          <td><span class="vehicle-tag">TRK-001</span></td>
+          <td class="actions">
+            <span class="action-link edit">Edit</span>
+            <span class="action-link assign">Assign Vehicle</span>
+            <span class="action-link del">Deactivate</span>
+          </td>
+        </tr>
+        <tr>
+          <td style="font-weight:600">Sam Smith</td>
+          <td style="color:#64748b">+1-555-0102</td>
+          <td style="color:#64748b;font-family:monospace;font-size:11px">LIC-002-2024</td>
+          <td><span class="status s-active">active</span></td>
+          <td><span class="vehicle-tag">CAR-003</span></td>
+          <td class="actions">
+            <span class="action-link edit">Edit</span>
+            <span class="action-link assign">Assign Vehicle</span>
+            <span class="action-link del">Deactivate</span>
+          </td>
+        </tr>
+        <tr>
+          <td style="font-weight:600">Mike Roads</td>
+          <td style="color:#64748b">+1-555-0103</td>
+          <td style="color:#64748b;font-family:monospace;font-size:11px">LIC-003-2024</td>
+          <td><span class="status s-active">active</span></td>
+          <td style="color:#475569;font-size:12px">— unassigned</td>
+          <td class="actions">
+            <span class="action-link edit">Edit</span>
+            <span class="action-link assign">Assign Vehicle</span>
+            <span class="action-link del">Deactivate</span>
+          </td>
+        </tr>
+        <tr>
+          <td style="font-weight:600">Lee Chan</td>
+          <td style="color:#64748b">+1-555-0104</td>
+          <td style="color:#64748b;font-family:monospace;font-size:11px">LIC-004-2024</td>
+          <td><span class="status s-inactive">inactive</span></td>
+          <td style="color:#475569;font-size:12px">—</td>
+          <td class="actions">
+            <span class="action-link edit">Edit</span>
+            <span class="action-link del" style="color:#34d399">Reactivate</span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Floating modal shown for context -->
+  <div style="position:fixed;bottom:24px;right:24px;background:#334155;border-radius:12px;padding:12px 16px;font-size:11px;color:#94a3b8;max-width:200px;">
+    💡 Modal shown on "Add Driver" or "Edit" click
+  </div>
+</div>
+</body>
+</html>

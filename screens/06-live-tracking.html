@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Screen 06 — Live Tracking | FleetOps</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: #0f172a; color: #fff; min-height: 100vh; display: flex; }
+  .sidebar { width: 220px; background: #0f172a; border-right: 1px solid #1e293b; flex-shrink: 0; padding: 16px 8px; }
+  .sidebar-logo { display: flex; align-items: center; gap: 10px; padding: 0 8px 16px; border-bottom: 1px solid #1e293b; margin-bottom: 12px; }
+  .logo-icon { width: 32px; height: 32px; background: #f97316; border-radius: 9px; font-size: 16px; display: flex; align-items: center; justify-content: center; }
+  .nav-item { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 10px; font-size: 13px; color: #64748b; margin-bottom: 2px; }
+  .nav-item.active { background: rgba(249,115,22,.12); color: #fb923c; font-weight: 600; }
+  .main { flex: 1; padding: 24px; }
+  .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+  .page-title { font-size: 22px; font-weight: 700; }
+  .page-sub { font-size: 13px; color: #64748b; margin-top: 3px; }
+  .live-badge { display: flex; align-items: center; gap: 6px; background: rgba(52,211,153,.1); color: #34d399; padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+  .live-dot { width: 7px; height: 7px; border-radius: 50%; background: #34d399; animation: pulse 1.5s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+  .grid { display: grid; grid-template-columns: 240px 1fr; gap: 16px; }
+  /* Driver List */
+  .driver-list { background: #1e293b; border: 1px solid #334155; border-radius: 14px; padding: 14px; }
+  .list-title { font-size: 11px; color: #475569; text-transform: uppercase; letter-spacing: .08em; margin-bottom: 12px; }
+  .driver-btn { display: flex; align-items: center; gap: 10px; width: 100%; padding: 10px; border-radius: 10px; background: transparent; border: none; color: #f1f5f9; cursor: pointer; text-align: left; margin-bottom: 4px; }
+  .driver-btn:hover { background: #334155; }
+  .driver-btn.selected { background: #334155; box-shadow: inset 0 0 0 1px rgba(249,115,22,.4); }
+  .status-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .dot-active { background: #34d399; }
+  .dot-trip { background: #f97316; animation: pulse 1s infinite; }
+  .dot-inactive { background: #475569; }
+  .driver-info { flex: 1; }
+  .driver-name { font-size: 13px; font-weight: 500; }
+  .driver-status { font-size: 11px; color: #64748b; text-transform: capitalize; }
+  .loc-icon { font-size: 14px; }
+  /* Map */
+  .map-area { background: #1e293b; border: 1px solid #334155; border-radius: 14px; overflow: hidden; position: relative; min-height: 420px; }
+  .map-bg { position: absolute; inset: 0; background: #0f172a; }
+  .map-grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(255,255,255,.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.04) 1px, transparent 1px); background-size: 40px 40px; }
+  .map-label { position: absolute; top: 14px; left: 14px; font-size: 11px; color: #475569; background: rgba(15,23,42,.8); padding: 4px 10px; border-radius: 6px; }
+  .map-pin { position: absolute; display: flex; flex-direction: column; align-items: center; cursor: pointer; }
+  .pin-circle { width: 16px; height: 16px; border-radius: 50%; border: 2px solid #0f172a; box-shadow: 0 0 0 3px rgba(249,115,22,.2); }
+  .pin-label { font-size: 10px; background: #1e293b; color: #f1f5f9; padding: 2px 7px; border-radius: 4px; margin-top: 4px; white-space: nowrap; }
+  .pin-trip { background: #f97316; animation: pulse 1s infinite; }
+  .pin-active { background: #34d399; }
+  /* Detail card */
+  .detail-card { background: #1e293b; border: 1px solid rgba(249,115,22,.3); border-radius: 14px; padding: 16px; margin-top: 16px; }
+  .detail-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; }
+  .detail-item label { font-size: 11px; color: #475569; display: block; margin-bottom: 3px; }
+  .detail-item p { font-size: 13px; color: #f1f5f9; }
+</style>
+</head>
+<body>
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-icon">🚚</div>
+    <span style="font-weight:700;font-size:14px">FleetOps</span>
+  </div>
+  <div class="nav-item">🏠 Dashboard</div>
+  <div class="nav-item">👥 Drivers</div>
+  <div class="nav-item">🚗 Vehicles</div>
+  <div class="nav-item">📦 Orders</div>
+  <div class="nav-item active">📍 Live Tracking</div>
+  <div class="nav-item">🚚 Driver Portal</div>
+  <div class="nav-item">👤 Users</div>
+</nav>
+
+<div class="main">
+  <div class="header">
+    <div>
+      <div class="page-title">Live Tracking</div>
+      <div class="page-sub">Real-time driver locations · Updates every 10s</div>
+    </div>
+    <div class="live-badge"><div class="live-dot"></div> Live</div>
+  </div>
+
+  <div class="grid">
+    <div class="driver-list">
+      <div class="list-title">Drivers (4)</div>
+      <button class="driver-btn selected">
+        <div class="status-dot dot-trip"></div>
+        <div class="driver-info">
+          <div class="driver-name">Dan Driver</div>
+          <div class="driver-status">on trip</div>
+        </div>
+        <span class="loc-icon">📍</span>
+      </button>
+      <button class="driver-btn">
+        <div class="status-dot dot-trip"></div>
+        <div class="driver-info">
+          <div class="driver-name">Sam Smith</div>
+          <div class="driver-status">on trip</div>
+        </div>
+        <span class="loc-icon">📍</span>
+      </button>
+      <button class="driver-btn">
+        <div class="status-dot dot-active"></div>
+        <div class="driver-info">
+          <div class="driver-name">Mike Roads</div>
+          <div class="driver-status">active</div>
+        </div>
+        <span class="loc-icon">📍</span>
+      </button>
+      <button class="driver-btn">
+        <div class="status-dot dot-inactive"></div>
+        <div class="driver-info">
+          <div class="driver-name">Lee Chan</div>
+          <div class="driver-status">inactive</div>
+        </div>
+      </button>
+    </div>
+
+    <div class="map-area">
+      <div class="map-bg"></div>
+      <div class="map-grid"></div>
+      <div class="map-label">📍 San Francisco Bay Area</div>
+      <!-- Driver pins -->
+      <div class="map-pin" style="left:38%;top:30%">
+        <div class="pin-circle pin-trip"></div>
+        <div class="pin-label">Dan Driver</div>
+      </div>
+      <div class="map-pin" style="left:55%;top:55%">
+        <div class="pin-circle pin-trip"></div>
+        <div class="pin-label">Sam Smith</div>
+      </div>
+      <div class="map-pin" style="left:65%;top:35%">
+        <div class="pin-circle pin-active"></div>
+        <div class="pin-label">Mike Roads</div>
+      </div>
+      <!-- Scale -->
+      <div style="position:absolute;bottom:14px;right:14px;font-size:10px;color:#334155;background:rgba(15,23,42,.8);padding:3px 8px;border-radius:4px;">
+        ↔ 2 km
+      </div>
+      <!-- Legend -->
+      <div style="position:absolute;bottom:14px;left:14px;background:rgba(15,23,42,.8);border-radius:8px;padding:8px 12px;display:flex;gap:14px;">
+        <div style="display:flex;align-items:center;gap:5px;font-size:10px;color:#94a3b8"><div style="width:8px;height:8px;border-radius:50%;background:#f97316"></div> On Trip</div>
+        <div style="display:flex;align-items:center;gap:5px;font-size:10px;color:#94a3b8"><div style="width:8px;height:8px;border-radius:50%;background:#34d399"></div> Available</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Selected driver detail -->
+  <div class="detail-card">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;">
+      <div style="width:8px;height:8px;border-radius:50%;background:#f97316;animation:pulse 1s infinite"></div>
+      <span style="font-size:13px;font-weight:600">Dan Driver — Selected</span>
+    </div>
+    <div class="detail-grid">
+      <div class="detail-item"><label>Phone</label><p>+1-555-0101</p></div>
+      <div class="detail-item"><label>Status</label><p style="color:#fb923c">On Trip</p></div>
+      <div class="detail-item"><label>Last Location</label><p style="color:#34d399;font-family:monospace;font-size:11px">37.7870, -122.4040</p></div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

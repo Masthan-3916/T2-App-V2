@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Screen 05 — Order Detail | FleetOps</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: #0f172a; color: #fff; min-height: 100vh; display: flex; }
+  .sidebar { width: 220px; background: #0f172a; border-right: 1px solid #1e293b; flex-shrink: 0; padding: 16px 8px; }
+  .sidebar-logo { display: flex; align-items: center; gap: 10px; padding: 0 8px 16px; border-bottom: 1px solid #1e293b; margin-bottom: 12px; }
+  .logo-icon { width: 32px; height: 32px; background: #f97316; border-radius: 9px; font-size: 16px; display: flex; align-items: center; justify-content: center; }
+  .nav-item { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 10px; font-size: 13px; color: #64748b; margin-bottom: 2px; }
+  .nav-item.active { background: rgba(249,115,22,.12); color: #fb923c; font-weight: 600; }
+  .main { flex: 1; padding: 24px; max-width: 800px; }
+  .back { display: flex; align-items: center; gap: 8px; color: #64748b; font-size: 13px; cursor: pointer; margin-bottom: 20px; }
+  .page-title { font-size: 20px; font-weight: 700; }
+  .order-id { font-size: 11px; color: #475569; font-family: monospace; margin-top: 3px; }
+  /* Stepper */
+  .stepper { background: #1e293b; border: 1px solid #334155; border-radius: 14px; padding: 20px 24px; margin: 20px 0; display: flex; align-items: center; gap: 0; }
+  .step { display: flex; flex-direction: column; align-items: center; flex: 1; }
+  .step-connector { flex: 1; height: 2px; margin-bottom: 20px; }
+  .step-circle { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; margin-bottom: 6px; }
+  .step-label { font-size: 11px; color: #64748b; text-transform: capitalize; }
+  .step-done .step-circle { background: #f97316; color: #fff; }
+  .step-done .step-label { color: #f1f5f9; }
+  .step-current .step-circle { background: rgba(249,115,22,.15); color: #fb923c; border: 1px solid #f97316; }
+  .step-current .step-label { color: #fb923c; }
+  .step-todo .step-circle { background: #334155; color: #475569; }
+  .conn-done { background: #f97316; }
+  .conn-todo { background: #334155; }
+  /* Info */
+  .card { background: #1e293b; border: 1px solid #334155; border-radius: 14px; padding: 20px; margin-bottom: 16px; }
+  .card-title { font-size: 13px; font-weight: 600; color: #f1f5f9; margin-bottom: 16px; }
+  .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .info-item label { font-size: 11px; color: #475569; display: block; margin-bottom: 4px; }
+  .info-item p { font-size: 14px; color: #f1f5f9; }
+  /* Actions */
+  .action-btns { display: flex; gap: 10px; }
+  .btn { padding: 9px 18px; border-radius: 10px; font-size: 13px; font-weight: 600; border: none; cursor: pointer; }
+  .btn-transit { background: rgba(249,115,22,.15); color: #fb923c; }
+  .btn-complete { background: rgba(16,185,129,.15); color: #34d399; }
+  .btn-cancel { background: rgba(239,68,68,.1); color: #f87171; }
+  /* Timeline */
+  .timeline { display: flex; flex-direction: column; gap: 0; }
+  .tl-item { display: flex; gap: 14px; }
+  .tl-left { display: flex; flex-direction: column; align-items: center; width: 12px; }
+  .tl-dot { width: 10px; height: 10px; border-radius: 50%; margin-top: 3px; flex-shrink: 0; }
+  .tl-line { width: 2px; flex: 1; background: #334155; margin: 4px 0; }
+  .tl-body { padding-bottom: 18px; }
+  .tl-status { font-size: 13px; font-weight: 600; text-transform: capitalize; }
+  .tl-meta { font-size: 11px; color: #475569; margin-top: 3px; }
+</style>
+</head>
+<body>
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-icon">🚚</div>
+    <span style="font-weight:700;font-size:14px">FleetOps</span>
+  </div>
+  <div class="nav-item">🏠 Dashboard</div>
+  <div class="nav-item">👥 Drivers</div>
+  <div class="nav-item">🚗 Vehicles</div>
+  <div class="nav-item active">📦 Orders</div>
+  <div class="nav-item">📍 Live Tracking</div>
+  <div class="nav-item">🚚 Driver Portal</div>
+  <div class="nav-item">👤 Users</div>
+</nav>
+
+<div class="main">
+  <div class="back">← Back to Orders</div>
+  <div class="page-title">Order Details</div>
+  <div class="order-id">ID: 30000000-0000-0000-0000-000000000001</div>
+
+  <!-- Status Stepper -->
+  <div class="stepper">
+    <div class="step step-done">
+      <div class="step-circle">✓</div>
+      <span class="step-label">Created</span>
+    </div>
+    <div class="step-connector conn-done"></div>
+    <div class="step step-done">
+      <div class="step-circle">✓</div>
+      <span class="step-label">Assigned</span>
+    </div>
+    <div class="step-connector conn-done"></div>
+    <div class="step step-current">
+      <div class="step-circle">3</div>
+      <span class="step-label">In Transit</span>
+    </div>
+    <div class="step-connector conn-todo"></div>
+    <div class="step step-todo">
+      <div class="step-circle">4</div>
+      <span class="step-label">Completed</span>
+    </div>
+  </div>
+
+  <!-- Info Card -->
+  <div class="card">
+    <div class="card-title">Order Information</div>
+    <div class="info-grid">
+      <div class="info-item">
+        <label>Pickup Location</label>
+        <p>Warehouse A, 123 Industrial Blvd</p>
+      </div>
+      <div class="info-item">
+        <label>Drop-off Location</label>
+        <p>Client Office, 456 Market St</p>
+      </div>
+      <div class="info-item">
+        <label>Distance</label>
+        <p>5.2 km</p>
+      </div>
+      <div class="info-item">
+        <label>Estimated Time</label>
+        <p>~18 min</p>
+      </div>
+      <div class="info-item">
+        <label>Status</label>
+        <p style="color:#fb923c;font-weight:600">In Transit</p>
+      </div>
+      <div class="info-item">
+        <label>Assigned Driver</label>
+        <p>Dan Driver</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Actions -->
+  <div class="card">
+    <div class="card-title">Update Status</div>
+    <div class="action-btns">
+      <button class="btn btn-complete">✓ Mark Completed</button>
+      <button class="btn btn-cancel">Cancel Order</button>
+    </div>
+  </div>
+
+  <!-- Timeline -->
+  <div class="card">
+    <div class="card-title">Timeline</div>
+    <div class="timeline">
+      <div class="tl-item">
+        <div class="tl-left"><div class="tl-dot" style="background:#64748b"></div><div class="tl-line"></div></div>
+        <div class="tl-body">
+          <div class="tl-status" style="color:#94a3b8">created</div>
+          <div class="tl-meta">Mar 9, 2026 · 9:00 AM · by Dave Dispatcher</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-left"><div class="tl-dot" style="background:#64748b"></div><div class="tl-line"></div></div>
+        <div class="tl-body">
+          <div class="tl-status" style="color:#93c5fd">assigned</div>
+          <div class="tl-meta">Mar 9, 2026 · 9:30 AM · by Dave Dispatcher</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-left"><div class="tl-dot" style="background:#f97316"></div></div>
+        <div class="tl-body">
+          <div class="tl-status" style="color:#fb923c">in transit</div>
+          <div class="tl-meta">Mar 9, 2026 · 10:00 AM · by Dan Driver</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
