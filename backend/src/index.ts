@@ -63,8 +63,13 @@ app.use(notFoundHandler);
 app.use(errorHandler);
 
 // ─── Start ────────────────────────────────────────────────────────────────────
-app.listen(config.port, () => {
+const server = app.listen(config.port, '0.0.0.0', () => {
   logger.info(`🚀 Server running on port ${config.port} [${config.env}]`);
+});
+
+server.on('error', (err: Error) => {
+  logger.error('Server startup error:', err);
+  process.exit(1);
 });
 
 export default app;
