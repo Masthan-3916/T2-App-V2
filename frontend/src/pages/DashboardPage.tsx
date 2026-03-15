@@ -1,7 +1,7 @@
 // src/pages/DashboardPage.tsx
 import { useQuery } from '@tanstack/react-query';
 import { dashboardApi } from '../services/api';
-import { DashboardSummary } from '../types';
+import { DashboardSummary, DailyMetric } from '../types';
 import { Spinner, Badge } from '../components/ui';
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
@@ -186,7 +186,7 @@ export default function DashboardPage() {
             </div>
             <div>
                <p className="text-[10px] text-slate-600 font-black uppercase mb-1">Peak Volume</p>
-               <p className="text-white font-black text-xl">{Math.max(...(metrics?.daily_metrics?.map((m: any) => m.created) || [0]))}<span className="text-slate-500 text-xs ml-1">MAX/DAY</span></p>
+               <p className="text-white font-black text-xl">{Math.max(...(metrics?.daily_metrics?.map((m: DailyMetric) => m.created) || [0]))}<span className="text-slate-500 text-xs ml-1">MAX/DAY</span></p>
             </div>
           </div>
         </div>

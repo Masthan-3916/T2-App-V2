@@ -107,26 +107,7 @@ export interface PaginationQuery {
   status?: string
 }
 
-/* Extend Express Request */
-declare global {
-  namespace Express {
-    // eslint-disable-next-line @typescript-eslint/no-empty-interface
-    interface User {
-      id: string
-      name: string
-      email: string
-      role: UserRole
-      google_id?: string
-      avatar_url?: string
-      status: UserStatus
-      created_at: string
-      updated_at: string
-    }
-    interface Request {
-      user?: User
-      requestId?: string
-    }
-  }
-}
+/* Remove global Express extension - moved to express.d.ts */
+
 
 export {}
